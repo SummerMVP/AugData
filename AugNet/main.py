@@ -14,7 +14,7 @@ from train import *
 from tools.funcs import *
 from tools.TES import *
 from AugNet import UNet
-from MyDataloader import MyDatasetSingle, MyDatasetSingleADS
+from MyDataloader import MyDatasetSingle, MyDatasetPair
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '0,1'
 torch.cuda.set_device(0)
@@ -38,9 +38,12 @@ def main(args):
     eval_transform = transforms.Compose([
         ToTensor()
     ])
-
-    train_dataset = MyDatasetSingleADS(args.train_txt, Type='train')
-    valid_dataset = MyDatasetSingleADS(args.val_txt, Type='val')
+    train_transform = transforms.Compose([
+        AugData(),
+        ToTensor()
+    ])
+    train_dataset = MyDatasetSingle(args.train_dir, 0, train_transform)
+    valid_dataset = MyDatasetSingle(args.val_dir, 1, eval_transform)
     test_dataset = MyDatasetSingle(args.cover_dir, 2, eval_transform)
 
     train_loader = DataLoader(train_dataset, batch_size=args.batchsize, shuffle=True, **kwargs)
@@ -90,12 +93,12 @@ def parse_args():
         help='the path of cover images'
     )
     parser.add_argument(
-        '--train-txt', dest='train_txt', type=str, required=False,
-        default=r"dataset/txt/BB-suni04-train.txt",
+        '--train_dir', dest='train__dir', type=str, required=False,
+        default=r"dataset/txt/BB-suni04-train",
     )
     parser.add_argument(
-        '--val-txt', dest='val_txt', type=str, required=False,
-        default=r"dataset/txt/BB-suni04-val.txt",
+        '--val_dir', dest='val_dir', type=str, required=False,
+        default=r"dataset/txt/BB-suni04-val",
     )
 
     parser.add_argument('--output_dir', dest='output_dir', type=str, default=None)
