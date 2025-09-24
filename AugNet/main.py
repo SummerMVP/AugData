@@ -14,7 +14,7 @@ from train import *
 from tools.funcs import *
 from tools.TES import *
 from AugNet import UNet
-from MyDataloader import MyDatasetSingle, MyDatasetPair
+from MyDataloader import MyDatasetSingle, MyDatasetSingleADS
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '0,1'
 torch.cuda.set_device(0)
@@ -39,8 +39,8 @@ def main(args):
         ToTensor()
     ])
 
-    train_dataset = MyDatasetPair(args.train_txt, Type='train')
-    valid_dataset = MyDatasetPair(args.val_txt, Type='val')
+    train_dataset = MyDatasetSingleADS(args.train_txt, Type='train')
+    valid_dataset = MyDatasetSingleADS(args.val_txt, Type='val')
     test_dataset = MyDatasetSingle(args.cover_dir, 2, eval_transform)
 
     train_loader = DataLoader(train_dataset, batch_size=args.batchsize, shuffle=True, **kwargs)
